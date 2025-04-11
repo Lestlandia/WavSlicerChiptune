@@ -18,6 +18,11 @@ Run with:
 ```sh
 ./slicer <FILENAME> <BPM> <rows_per_beat> <pattern_rows> <naming_mode>
 ```
+Example: 
+Run with:
+```sh
+./slicer mysong.wav 120 4 64 DEC|BIN
+```
 
 ### Windows
 Compile using your configured tasks. Run slicer.exe with the appropriate parameters.
