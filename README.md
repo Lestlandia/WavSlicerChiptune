@@ -7,6 +7,9 @@ WavSlicerChiptune is an audio slicer that uses ffprobe and ffmpeg to split audio
 - Supports DEC and HEX naming modes
 - Compatible with Windows and Linux
 
+## Prerequisites
+- Requires tools like *ffmpeg* and *ffprobe* to function properly.
+
 ## Build & Usage
 
 ### Linux
