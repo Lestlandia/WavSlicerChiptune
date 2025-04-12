@@ -9,7 +9,7 @@ WavSlicerChiptune is an audio slicer that uses ffprobe and ffmpeg to split audio
 
 ## Prerequisites
 - Requires tools like *ffmpeg* and *ffprobe* to function properly.
-- executables need to be added to the system PATH so the program can invoke them via command line.
+  executables need to be added to the system PATH so the program can invoke them via command line.
 
 ## Build & Usage
 
