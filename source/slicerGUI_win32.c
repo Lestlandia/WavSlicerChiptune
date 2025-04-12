@@ -1,6 +1,6 @@
 /* slicerGUI_win32.c: Win32 GUI for slicer.exe.
    USAGE: Select audio file & params; calls slicer.exe.
-   Compile: gcc slicerGUI_win32.c -o slicerGUI_win32 -lcomctl32 -mwindows
+   Compile: gcc slicerGUI_win32.c -o slicerGUI_win32 -lcomctl32 -mwindows -fgnu89-inline
 */
 #include <windows.h>
 #include <commdlg.h>
@@ -27,7 +27,7 @@
 
 // Global handles for controls we need to read/manipulate.
 HWND hEditFilepath, hEditBPM, hEditRowsPerBeat, hEditRowLen;
-HWND hCheckHex, hProgressBar;
+HWND hCheckHex, hProgressBar, hProgressText; // Added: static control to display progress text
 
 // Forward declarations
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -114,10 +114,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             10, 80, 580, 50, hwnd, (HMENU)IDC_LABEL_EXPLAIN, ((LPCREATESTRUCT)lParam)->hInstance, NULL);
         CreateWindow("STATIC", "Slicing Progress", WS_CHILD|WS_VISIBLE|SS_LEFT,
             10, 140, 300, 20, hwnd, (HMENU)IDC_PROGRESS_LABEL, ((LPCREATESTRUCT)lParam)->hInstance, NULL);
+
         hProgressBar = CreateWindowEx(0, PROGRESS_CLASS, NULL, WS_CHILD|WS_VISIBLE|PBS_SMOOTH,
             10, 160, 580, 25, hwnd, (HMENU)IDC_PROGRESS_BAR, ((LPCREATESTRUCT)lParam)->hInstance, NULL);
         SendMessage(hProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0,100));
-        SendMessage(hProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)RGB(0,255,0));
+        SendMessage(hProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)RGB(0,255,0)); // default green
+
+        // Added: Create a static text control overlaying the progress bar
+        hProgressText = CreateWindowEx(WS_EX_TRANSPARENT, "STATIC", "",
+            WS_CHILD | WS_VISIBLE | SS_CENTER, 10, 160, 580, 25,
+            hwnd, (HMENU)115, ((LPCREATESTRUCT)lParam)->hInstance, NULL);
         CreateWindow("BUTTON", "Slice!", WS_CHILD|WS_VISIBLE|BS_DEFPUSHBUTTON,
             10, 195, 100, 30, hwnd, (HMENU)IDC_BUTTON_SLICE, ((LPCREATESTRUCT)lParam)->hInstance, NULL);
         break;
@@ -156,9 +162,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             if (!strlen(filePath)) { MessageBox(hwnd, "Select an audio file.", "Error", MB_ICONERROR); break; }
             if (!strlen(bpm)) strcpy(bpm,"125"); if (!strlen(rpb)) strcpy(rpb,"4"); if (!strlen(rowlen)) strcpy(rowlen,"64");
             SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
+            // Set progress bar to yellow and update text to "slicing..."
+            SendMessage(hProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)RGB(255,255,0));
+            SetWindowText(hProgressText, "slicing...");
+
             char cmdLine[1024];
             wsprintf(cmdLine, "slicer.exe \"%s\" %s %s %s %s", filePath, bpm, rpb, rowlen, namingMode);
-            SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), TRUE, NULL };
+            SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
             HANDLE hRead, hWrite;
             if (!CreatePipe(&hRead, &hWrite, &sa, 0)) { MessageBox(hwnd, "Pipe error.", "Error", MB_ICONERROR); break; }
             SetHandleInformation(hRead, HANDLE_FLAG_INHERIT, 0);
@@ -192,7 +202,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             CloseHandle(pi.hProcess); CloseHandle(pi.hThread);
             if (lastProgress < 100)
                 SendMessage(hProgressBar, PBM_SETPOS, 100, 0);
-            MessageBox(hwnd, "Slicing Done!", "Success", MB_ICONINFORMATION);
+            // Once slicing is done, turn the bar green and update text
+            SendMessage(hProgressBar, PBM_SETBARCOLOR, 0, (LPARAM)RGB(0,255,0));
+            SetWindowText(hProgressText, "slicing done!");
             break;
         }
         }
