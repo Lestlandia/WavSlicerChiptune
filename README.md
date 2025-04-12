@@ -20,7 +20,7 @@ Run with:
 ```
 Example: 
 ```sh
-./slicer mysong.wav 120 4 64 DEC|BIN
+./slicer mysong.wav 120 4 64 DEC|HEX
 ```
 
 ### Windows
