@@ -167,7 +167,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SetWindowText(hProgressText, "slicing...");
 
             char cmdLine[1024];
-            wsprintf(cmdLine, "slicer.exe \"%s\" %s %s %s %s", filePath, bpm, rpb, rowlen, namingMode);
+            snprintf(cmdLine, sizeof(cmdLine), "slicer.exe \"%s\" %s %s %s %s", filePath, bpm, rpb, rowlen, namingMode);
             SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
             HANDLE hRead, hWrite;
             if (!CreatePipe(&hRead, &hWrite, &sa, 0)) { MessageBox(hwnd, "Pipe error.", "Error", MB_ICONERROR); break; }

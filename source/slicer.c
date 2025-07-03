@@ -48,10 +48,11 @@ void get_base_name(const char *FILENAME, char *base, size_t base_size) {
     }
 #endif
     if (slash) {
-        strncpy(base, slash + 1, base_size); // Copy the file name after the last slash
+        strncpy(base, slash + 1, base_size - 1); // Copy the file name after the last slash
     } else {
-        strncpy(base, FILENAME, base_size); // If no slash, use the entire FILENAME
+        strncpy(base, FILENAME, base_size - 1); // If no slash, use the entire FILENAME
     }
+    base[base_size - 1] = '\0'; // Ensure null termination
 
     // Remove unnecessary path and extension
     char *dot = strrchr(base, '.'); // Find the last dot for the file extension
