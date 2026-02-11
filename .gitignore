@@ -1,0 +1,31 @@
+# Compiled binaries
+slicer
+slicer.exe
+fur_gen
+fur_gen.exe
+furnace_gen
+furnace_gen.exe
+slicerGUI_win32.exe
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor/tool configs
+.vscode/
+.claude/
+
+# WAV/audio test data
+*.wav
+*.mp3
+*.fur
+*.fui
+*.txt
+!README.md
+!CLAUDE.md
+!USAGE.txt
